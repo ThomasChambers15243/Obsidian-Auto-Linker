@@ -33,4 +33,4 @@ Clone the repo or download the .zip and these files into a folder names `auto_li
 
 
 If you want to aid my *mild* caffeine addiction
-[But me a Coffee :)](https://www.buymeacoffee.com/TomChambers)
+[Buy me a Coffee :)](https://www.buymeacoffee.com/TomChambers)
