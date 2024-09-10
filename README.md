@@ -26,7 +26,7 @@ Its toggled with either
  
 
 ### Installation 
-Clone the repo or download the .zip and these files into a folder names `notes_tracker`
+Clone the repo or download the .zip and these files into a folder names `auto_linker`
 - `main.js`
 - `manifest.json`
 - `styles.css`
