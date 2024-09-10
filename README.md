@@ -1,1 +1,36 @@
-# Auto Linker
+# Auto Linker for Obsidian 
+> ***Currently in Development*** 
+
+Auto linker creates links across your entire vault as you type. Links head to :
+- Markdown Files
+- Headers
+- Tags
+
+Its toggled with either
+
+`Ctrl` + `Shift` + `L`
+
+`Ctrl`+`Alt`+`L`
+
+![Usage Example](Docs\Auto_Linker.gif)
+
+### In The Works
+- Linker cannot yet create links from multiple words (e.g # Auto Linker). This will be changed to include full headers and words
+- Currently all files are included. This will be changed so that files can be excluded with a tag
+- Setting option to remove colliding links.
+- A settings allow options for only linking Tags/Headers/PageNames
+
+### Known bugs
+ - When selecting a link from a list, it removes the whole line.
+ - Pages sometimes create two links, requiring a selection.
+ 
+
+### Installation 
+Clone the repo or download the .zip and these files into a folder names `notes_tracker`
+- `main.js`
+- `manifest.json`
+- `styles.css`
+
+
+If you want to full my *mild* caffeine addiction
+[But me a Coffee :)](https://www.buymeacoffee.com/TomChambers)
