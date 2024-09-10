@@ -32,5 +32,5 @@ Clone the repo or download the .zip and these files into a folder names `notes_t
 - `styles.css`
 
 
-If you want to full my *mild* caffeine addiction
+If you want to aid my *mild* caffeine addiction
 [But me a Coffee :)](https://www.buymeacoffee.com/TomChambers)
