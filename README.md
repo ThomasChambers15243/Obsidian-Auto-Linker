@@ -12,7 +12,7 @@ Its toggled with either
 
 `Ctrl`+`Alt`+`L`
 
-![Usage Example](Docs\Auto_Linker.gif)
+![Usage Example](./Docs/Auto_Linker.gif)
 
 ### In The Works
 - Linker cannot yet create links from multiple words (e.g # Auto Linker). This will be changed to include full headers and words
