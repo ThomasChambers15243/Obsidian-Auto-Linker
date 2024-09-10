@@ -31,6 +31,11 @@ Clone the repo or download the .zip and these files into a folder names `auto_li
 - `manifest.json`
 - `styles.css`
 
+---
 
-If you want to aid my *mild* caffeine addiction
+Check out some of my other Obsidian/Markdown Projects!
+- [Obsidian Notes Rewview Tracker](https://github.com/ThomasChambers15243/Obsidian-Review-Tracker)
+- [Markdown Review Tracker in Rust](https://github.com/ThomasChambers15243/Review-Tracker)
+
+If you want to fuel my *mild* caffeine addiction
 [Buy me a Coffee :)](https://www.buymeacoffee.com/TomChambers)
