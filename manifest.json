@@ -1,0 +1,11 @@
+{
+	"id": "auto_linker",
+	"name": "Auto Linker",
+	"version": "0.9.0",
+	"minAppVersion": "0.15.0",
+	"description": "Automatically creates links to pages and headers in your notes as you type.",
+	"author": "Obsidian",
+	"authorUrl": "https://github.com/ThomasChambers15243",
+	"fundingUrl": "https://buymeacoffee.com/tomchambers",
+	"isDesktopOnly": false
+}

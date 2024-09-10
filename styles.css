@@ -1,0 +1,25 @@
+.link-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.link-button {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #f0f0f0;
+    border: none; 
+    border-radius: 5px;
+    cursor: pointer; 
+    text-align: left;
+    transition: background-color 0.3s ease;
+}
+.link-button:hover {
+    background-color: #413e3e; 
+}
+
+.link-button.selected {
+    background-color: #3a3a3a;
+    color: white;
+}
