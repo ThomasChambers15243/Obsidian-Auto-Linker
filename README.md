@@ -16,13 +16,13 @@ Its toggled with either
 
 ### In The Works
 - Linker cannot yet create links from multiple words (e.g # Auto Linker). This will be changed to include full headers and words
-- Currently all files are included. This will be changed so that files can be excluded with a tag
 - Setting option to remove colliding links.
 - A settings allow options for only linking Tags/Headers/PageNames
 
 ### Known bugs
  - When selecting a link from a list, it removes the whole line.
  - Pages sometimes create two links, requiring a selection.
+ - Old links are not removed when updated
  
 
 ### Installation 
