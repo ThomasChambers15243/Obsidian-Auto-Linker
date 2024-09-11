@@ -1,13 +1,21 @@
 import { Plugin, Notice } from "obsidian";
 import { AutoLinker } from "src/linker"
+import { AutoLinkerSettings, AutoLinkerSettingsTab } from "src/settings";
+
+const DEFAULT_SETTINGS: Partial<AutoLinkerSettings> = {
+  excludeWithTag: false,
+}
 
 
-
-
-export default class ReviewTracker extends Plugin {
+export default class Main extends Plugin {
   autoLinker: AutoLinker;
+  settings: AutoLinkerSettings;
   
   async onload() {
+    await this.loadSettings();
+
+    this.addSettingTab(new AutoLinkerSettingsTab(this.app, this));
+
     // Init autoLink and load in links
     this.autoLinker = new AutoLinker(this.app);
     if (await this.autoLinker.loadAllLinksFromAllFills()) {
@@ -16,6 +24,7 @@ export default class ReviewTracker extends Plugin {
       // Track the user's editor changes
       this.registerEvent(this.app.workspace.on("editor-change", (editor, data) => {
         let codemirror = data.editor;
+        console.log(this.settings.excludeWithTag);
         if (codemirror && this.autoLinker.updating == false) {
           this.autoLinker.updating = true;
           this.autoLinker.handleTextChange(codemirror);
@@ -42,6 +51,14 @@ export default class ReviewTracker extends Plugin {
       },
     });
 
+  }
+
+  async loadSettings() {
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+  }
+  
+  async saveSettings() {
+    await this.saveData(this.settings);
   }
 
   onunload() {
