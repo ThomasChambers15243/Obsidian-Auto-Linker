@@ -44,12 +44,11 @@ export class AutoLinker{
             }
             
             resolve(true)
-            console.log(this.linkMap);
+            //console.log(this.linkMap);
         })
     }
 
     public async handleTextChange(editor: Editor) {
-        console.log("Activated: ", this.activated)
         if (!this.activated) {
             this.updating = false
             return;
@@ -58,23 +57,27 @@ export class AutoLinker{
             const cursor = editor.getCursor();
             const line = editor.getLine(cursor.line);
             if (this.linkMap != undefined) {
-                for (const key of this.linkMap.keys()) {
-                    let splitLine = line.split(' ');
-                    if (splitLine.includes(key) && !splitLine.includes(`[${key}]`) && !splitLine.includes(`#${key}`)) {
-                        let links = this.linkMap.get(key);
-                        if (links !== undefined) {
-                            let newLine = "";
-                            if (links.length > 1) {
-                                const modal = new LinkSelectionModal(this.app, links);
-                                newLine = await modal.openAndGetSelection();
-                            } else {
-                                newLine = line.replace(key, links[0]);
-                            }
-                            editor.replaceRange(newLine, 
-                                { line: cursor.line, ch: 0 },
-                                { line: cursor.line, ch: line.length });                                       
-                            break
-                            }
+                const matches = this.lineHasKey(line, Array.from(this.linkMap.keys()));
+                console.log("Matches are: " , matches);
+                if (matches != null) {
+                    // Always take the longest match as its most likley this was the intended one
+                    const match = matches.reduce((longest, current) => 
+                        current.length > longest.length ? current : longest, "");
+                    console.log("Match is: " + match)
+                    // Get the bucket
+                    const links = this.linkMap.get(match);
+                    if (links !== undefined) {
+                        let newLine = "";
+                        if (links.length > 1) {
+                            const modal = new LinkSelectionModal(this.app, links);
+                            newLine = await modal.openAndGetSelection();
+                        } else {
+                            newLine = line.replace(match, links[0]);
+                        }
+                        // Replace match
+                        editor.replaceRange(newLine+" ", 
+                            { line: cursor.line, ch: 0 },
+                            { line: cursor.line, ch: line.length });                                       
                     }
                 }
             } else {
@@ -97,6 +100,14 @@ export class AutoLinker{
         } else if (!bucket.contains(link)) {
             bucket.push(link)
         }
+    }
+    private lineHasKey(line: string, keys: string[]): RegExpMatchArray | null {
+        const keysP = keys.map(key => key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join("|");
+
+        // Final regex pattern
+        const regex = new RegExp(`(?<![#\\[\\(])\\b(?:#?\\s?)?(${keysP})\\b(?!\\S)`, "g");
+
+        return line.match(regex);
     }
 }
 
@@ -140,7 +151,6 @@ function extractTagsFromFile(metadataCache: MetadataCache, file: TFile): string[
                 trackedFiles.push(file);
             }
         })
-        console.log("Tracked files are: ", trackedFiles[0].basename);
         return trackedFiles;
     } else {
         return allFiles;

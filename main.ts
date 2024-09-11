@@ -24,7 +24,6 @@ export default class Main extends Plugin {
       // Track the user's editor changes
       this.registerEvent(this.app.workspace.on("editor-change", (editor, data) => {
         let codemirror = data.editor;
-        console.log(this.settings.excludeWithTag);
         if (codemirror && this.autoLinker.updating == false) {
           this.autoLinker.updating = true;
           this.autoLinker.handleTextChange(codemirror);
