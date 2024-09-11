@@ -17,8 +17,8 @@ export class AutoLinker{
     }
 
     // Methods
-    public loadAllLinksFromAllFills(): Promise<boolean> {
-        const files: TFile[] = getTrackedMarkdownFiles();        
+    public async loadAllLinksFromAllFills(): Promise<boolean> {
+        const files: TFile[] = await getTrackedMarkdownFiles();        
         return new Promise((resolve) => {
             if (!this.activated) {
                 resolve(false)
@@ -122,8 +122,31 @@ function extractTagsFromFile(metadataCache: MetadataCache, file: TFile): string[
   }
 
   // Gets markdown files from vault
-  function getTrackedMarkdownFiles(): TFile[] {
-    return this.app.vault.getMarkdownFiles()
+  async function getTrackedMarkdownFiles(): Promise<TFile[]> {
+    const pluginFolder = this.app.vault.configDir + '/plugins/Auto Linker';
+    const dataPath = pluginFolder + '/data.json';
+    const data = await this.app.vault.adapter.read(dataPath);
+    // Settings map
+    const settings = new Map<string, any>(Object.entries(JSON.parse(data)));
+
+    let allFiles: TFile[] = this.app.vault.getMarkdownFiles();
+    let trackedFiles: TFile[] = [];
+    
+    // If settings is enabled, only return files without the tag
+    if (settings.get("excludeWithTag") == true) {
+        allFiles.forEach((file) => {
+            let tags = extractTagsFromFile(this.app.metadataCache, file);
+            if (!tags.contains("exLink") && !tags.contains("exlink")) {
+                trackedFiles.push(file);
+            }
+        })
+        console.log("Tracked files are: ", trackedFiles[0].basename);
+        return trackedFiles;
+    } else {
+        return allFiles;
+    }
+
+    
   }
 
   
