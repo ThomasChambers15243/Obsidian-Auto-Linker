@@ -21,6 +21,7 @@ Its toggled with either
 - A settings allow options for only linking Tags/Headers/PageNames
 
 ### Known bugs
+- Old headers still register as links
  - When selecting a link from a list, it removes the whole line.
  - Pages sometimes create two links, requiring a selection.
  
