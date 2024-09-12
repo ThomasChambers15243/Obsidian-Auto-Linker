@@ -2,10 +2,13 @@ import { MetadataCache, TFile, App, Editor } from "obsidian";
 import { LinkSelectionModal } from 'src/selection'
 
 export class AutoLinker{
-    private app: App;;
     public linkMap: Map<string, string[]>;
     public updating: boolean;
     public activated: boolean;
+    private app: App;
+    private existingKeys: string[]; 
+
+
 
     public constructor(app: App) {
         this.linkMap = new Map();
@@ -14,11 +17,14 @@ export class AutoLinker{
         this.activated = true;
         // Ensures concurency when executing checks
         this.updating = false;
+        this.existingKeys = [];
     }
 
     // Methods
     public async loadAllLinksFromAllFills(): Promise<boolean> {
-        const files: TFile[] = await getTrackedMarkdownFiles();        
+        const files: TFile[] = await getTrackedMarkdownFiles();
+        this.existingKeys = [];
+        
         return new Promise((resolve) => {
             if (!this.activated) {
                 resolve(false)
@@ -44,9 +50,19 @@ export class AutoLinker{
                         this.addLinkToMap(header.heading, link)
                 });
             }
-            
+           
+            this.cleanKeys()
             resolve(true)
-            //console.log(this.linkMap);
+            console.log(this.linkMap);
+        })
+    }
+
+    // Removes any values in the map that don't exist in the vault anymore
+    private cleanKeys() {
+        this.linkMap.forEach((link, key) => {
+            if (!this.existingKeys.includes(key)) {
+                this.linkMap.delete(key)
+            }
         })
     }
 
@@ -86,7 +102,7 @@ export class AutoLinker{
                         }
                         const prevNewLine = newLine; 
                         // Avoid previous links
-                        newLine = newLine.replace(new RegExp(`(?<!\\[.*\\]\\([^)]*)\\b(${match})\\b`, 'g'), linkText);                                     
+                        newLine = newLine.replace(new RegExp(`(?<!\\[.*\\]\\([^)]*)\\b(${match})\\b`, 'g'), ' ' + linkText);                                     
                         if (newLine === prevNewLine) {
                             break;                                 
                     }   
@@ -120,6 +136,8 @@ export class AutoLinker{
         } else if (!bucket.contains(link)) {
             bucket.push(link)
         }
+        // Push key to existing keys, collisions don't matter
+        this.existingKeys.push(name.trim());
     }
     
     private lineHasKey(line: string, keys: string[]): RegExpMatchArray | null {
@@ -156,13 +174,16 @@ function extractTagsFromFile(metadataCache: MetadataCache, file: TFile): string[
 
   // Gets markdown files from vault
   async function getTrackedMarkdownFiles(): Promise<TFile[]> {
+    // Get settings
     const pluginFolder = this.app.vault.configDir + '/plugins/Auto Linker';
     const dataPath = pluginFolder + '/data.json';
     const data = await this.app.vault.adapter.read(dataPath);
     // Settings map
     const settings = new Map<string, any>(Object.entries(JSON.parse(data)));
 
+    // Gets all markdown files
     let allFiles: TFile[] = this.app.vault.getMarkdownFiles();
+    // Contains files without tags if tag tracking is activates
     let trackedFiles: TFile[] = [];
     
     // If settings is enabled, only return files without the tag
@@ -176,11 +197,10 @@ function extractTagsFromFile(metadataCache: MetadataCache, file: TFile): string[
         return trackedFiles;
     } else {
         return allFiles;
-    }
-
-    
+    }    
   }
 
+// Replaces gaps in strings with link valid spaces
 function replaceSpaces(str: string): string {
     return str.replaceAll(" ", "%20")
 }
