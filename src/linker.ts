@@ -50,6 +50,7 @@ export class AutoLinker{
         })
     }
 
+    // Handles the line change
     public async handleTextChange(editor: Editor) {
         if (!this.activated) {
             this.updating = false
@@ -65,28 +66,32 @@ export class AutoLinker{
                 do {
                     matches = this.lineHasKey(newLine, Array.from(this.linkMap.keys()));
                     console.log("Matches are: " , matches);
-                    if (matches != null) {
-                        // Always take the longest match as its most likley this was the intended one
-                        let match = matches.reduce((longest, current) => 
-                            current.length > longest.length ? current : longest, "");
-                        console.log("Match is: " + match)
-                        // Get the bucket
-                        let links = this.linkMap.get(match.trim());
-                        console.log(links)
-                        console.log(this.linkMap);
-                        if (links !== undefined) {
-                            let linkText = links[0]
-                            // If there are colling links, get the user to select one from a list
-                            if (links.length > 1) {
-                                const modal = new LinkSelectionModal(this.app, links);
-                                linkText = await modal.openAndGetSelection();
-                            }
-                            console.log("newline vefore", newLine)
-                            newLine = newLine.replace(match, linkText);                                     
-                            console.log("newline after", newLine)
-                        }
+                    if (!matches || matches.length === 0) {
+                        break;
                     }
-                    count += 1;                    
+                    // Always take the longest match as its most likley this was the intended one
+                    let match = matches.reduce((longest, current) => 
+                        current.length > longest.length ? current : longest, "");
+                    console.log("Match is: " + match)
+                    // Get the bucket
+                    let links = this.linkMap.get(match.trim());
+                    console.log(links)
+                    console.log(this.linkMap);
+                    if (links !== undefined) {
+                        let linkText = links[0]
+                        // If there are colling links, get the user to select one from a list
+                        if (links.length > 1) {
+                            const modal = new LinkSelectionModal(this.app, links);
+                            linkText = await modal.openAndGetSelection();
+                        }
+                        const prevNewLine = newLine; 
+                        // Avoid previous links
+                        newLine = newLine.replace(new RegExp(`(?<!\\[.*\\]\\([^)]*)\\b(${match})\\b`, 'g'), linkText);                                     
+                        if (newLine === prevNewLine) {
+                            break;                                 
+                    }   
+                    }
+                    count ++;                    
                 }
                 while (matches && count <= line.length);
                 // Replace match
@@ -121,7 +126,8 @@ export class AutoLinker{
         const keysP = keys.map(key => key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join("|");
 
         // Final regex pattern
-        const regex = new RegExp(`(?<![#\\[\\(])\\b(?:#?\\s?)?(${keysP})\\b(?!\\S)`, "g");
+        const regex = new RegExp(  `(?<!\\[.*\\]\\([^)]*)\\b(?:#?\\s?)?(${keysP})\\b(?!\\S)`,
+            'g');
 
         return line.match(regex);
     }
