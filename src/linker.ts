@@ -50,10 +50,12 @@ export class AutoLinker{
                         this.addLinkToMap(header.heading, link)
                 });
             }
-           
+            console.log(this.existingKeys)
             this.cleanKeys()
-            resolve(true)
+            console.log(this.existingKeys)
             console.log(this.linkMap);
+            resolve(true)
+            
         })
     }
 
@@ -72,7 +74,7 @@ export class AutoLinker{
             this.updating = false
             return;
         }
-        if (await this.loadAllLinksFromAllFills()) {
+        if (this.linkMap) {
             const cursor = editor.getCursor();
             const line = editor.getLine(cursor.line);
             if (this.linkMap != undefined) {
@@ -175,7 +177,7 @@ function extractTagsFromFile(metadataCache: MetadataCache, file: TFile): string[
   // Gets markdown files from vault
   async function getTrackedMarkdownFiles(): Promise<TFile[]> {
     // Get settings
-    const pluginFolder = this.app.vault.configDir + '/plugins/Auto Linker';
+    const pluginFolder = this.app.vault.configDir + '/plugins/auto_linker';
     const dataPath = pluginFolder + '/data.json';
     const data = await this.app.vault.adapter.read(dataPath);
     // Settings map

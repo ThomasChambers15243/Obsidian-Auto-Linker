@@ -1,4 +1,4 @@
-import { Plugin, Notice } from "obsidian";
+import { Plugin, Notice, Keymap } from "obsidian";
 import { AutoLinker } from "src/linker"
 import { AutoLinkerSettings, AutoLinkerSettingsTab } from "src/settings";
 
@@ -17,10 +17,17 @@ export default class Main extends Plugin {
     this.addSettingTab(new AutoLinkerSettingsTab(this.app, this));
 
     // Init autoLink and load in links
-    this.autoLinker = new AutoLinker(this.app);
+    this.autoLinker = new AutoLinker(this.app);    
+
     if (await this.autoLinker.loadAllLinksFromAllFills()) {
       this.autoLinker.activated = false;
       
+      this.registerDomEvent(document, "keydown", (event: KeyboardEvent) => {
+        if (event.key == "Enter") {
+          this.autoLinker.loadAllLinksFromAllFills();
+        }
+      })
+
       // Track the user's editor changes
       this.registerEvent(this.app.workspace.on("editor-change", (editor, data) => {
         let codemirror = data.editor;
@@ -29,7 +36,10 @@ export default class Main extends Plugin {
           this.autoLinker.handleTextChange(codemirror);
         }
       }))
+      
     }
+
+    
 
     // Activate AutoLinker
     this.addCommand({
